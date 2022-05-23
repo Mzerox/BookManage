@@ -80,6 +80,11 @@
             <nav id="menu" class="nav-main opened" role="navigation">
                 <!-- 左边框导航内细分类-->
                 <ul class="nav nav-sidebar mm-list">
+                    <li>
+                        <a href="index">
+                            <i class="fa fa-tasks" aria-hidden="true"></i><span>首页</span>
+                        </a>
+                    </li>
                <c:forEach items="${bookList}" var="book">
                    <li >
                        <a href="category?id=${book.getId()}">
@@ -118,47 +123,56 @@
             <div class="navbar" role="navigation">
                 <div class="container-fluid container-nav">
                     <div style="font-family:'微软雅黑 Light';font-size: x-large;font-weight: bold;color: rgb(59,191,180);">程序猿天堂自助图书馆</div>
+
                     <!-- 用户盒子-->
-                    <!--                    <div class="navbar-right">-->
-                    <!--                        <div class="userbox">-->
-                    <!--                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">-->
-                    <!--                                <figure class="profile-picture hidden-xs">-->
-                    <!--                                    <img src="assets/img/avatar.jpg" class="img-circle" alt="">-->
-                    <!--                                </figure>-->
-                    <!--                                <div class="profile-info">-->
-                    <!--                                    <span class="name">John Smith Doe</span>-->
-                    <!--                                    <span class="role"><i class="fa fa-circle bk-fg-success"></i> Administrator</span>-->
-                    <!--                                </div>-->
-                    <!--                                <i class="fa custom-caret"></i>-->
-                    <!--                            </a>-->
-                    <!--                            <div class="dropdown-menu">-->
-                    <!--                                <ul class="list-unstyled">-->
-                    <!--                                    <li class="dropdown-menu-header bk-bg-white bk-margin-top-15">-->
-                    <!--                                        <div class="progress progress-xs  progress-striped active">-->
-                    <!--                                            <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">-->
-                    <!--                                                60%-->
-                    <!--                                            </div>-->
-                    <!--                                        </div>-->
-                    <!--                                    </li>-->
-                    <!--                                    <li>-->
-                    <!--                                        <a href="page-profile.html"><i class="fa fa-user"></i> Profile</a>-->
-                    <!--                                    </li>-->
-                    <!--                                    <li>-->
-                    <!--                                        <a href="#"><i class="fa fa-wrench"></i> Settings</a>-->
-                    <!--                                    </li>-->
-                    <!--                                    <li>-->
-                    <!--                                        <a href="page-invoice"><i class="fa fa-usd"></i> Payments</a>-->
-                    <!--                                    </li>-->
-                    <!--                                    <li>-->
-                    <!--                                        <a href="#"><i class="fa fa-file"></i> File</a>-->
-                    <!--                                    </li>-->
-                    <!--                                    <li>-->
-                    <!--                                        <a href="page-login.html"><i class="fa fa-power-off"></i> Logout</a>-->
-                    <!--                                    </li>-->
-                    <!--                                </ul>-->
-                    <!--                            </div>-->
-                    <!--                        </div>-->
-                    <!--                    </div>-->
+                    <c:if test="${login=='true'}">
+                        <div class="navbar-right" style="transform: translateY(-60px)">
+                            <div class="userbox">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <figure class="profile-picture hidden-xs">
+                                        <img src="assets/img/avatar.jpg" class="img-circle" alt="">
+                                    </figure>
+                                    <div class="profile-info">
+                                        <span class="name">${name}</span>
+                                        <span class="role"><i class="fa fa-circle bk-fg-success"></i>Administrator</span>
+                                    </div>
+                                    <i class="fa custom-caret"></i>
+                                </a>
+                                <div class="dropdown-menu">
+                                    <ul class="list-unstyled">
+                                        <li class="dropdown-menu-header bk-bg-white bk-margin-top-15">
+                                            <div class="progress progress-xs  progress-striped active">
+                                                <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+                                                    60%
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <a href="page-profile.html"><i class="fa fa-user"></i> Profile</a>
+                                        </li>
+                                        <li>
+                                            <a href="#"><i class="fa fa-wrench"></i> Settings</a>
+                                        </li>
+                                        <li>
+                                            <a href="page-invoice"><i class="fa fa-usd"></i> Payments</a>
+                                        </li>
+                                        <li>
+                                            <a href="#"><i class="fa fa-file"></i> File</a>
+                                        </li>
+                                        <li>
+                                            <a href="login.jsp"><i class="fa fa-power-off"></i> Logout</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </c:if>
+                    <c:if test="${login=='false'}">
+                        <div class="navbar-right" style="font-size:x-large;transform: translateY(-60px) translateX(-50px)">
+                            <a href="login.jsp" style="text-decoration: none;color: black">登录</a>
+                        </div>
+                    </c:if>
+
                 </div>
             </div>
             <!-- 主页正题盒子-->
@@ -178,11 +192,12 @@
                         <div>
                             <table class="table table-hover">
                                 <tr>
-                                    <td>分类编码</td>
-                                    <td>书名</td>
-                                    <td>作者</td>
-                                    <td>出版社</td>
-
+                                    <th>分类编码</th>
+                                    <th>书名</th>
+                                    <th>作者</th>
+                                    <th>出版社</th>
+                                    <th>图书状态</th>
+                                    <th>购物车</th>
                                 </tr>
                                 <c:forEach items="${bookArrayList}" var="book">
                                     <tr>
@@ -190,6 +205,8 @@
                                         <td>${book.getName()}</td>
                                         <td>${book.getAuthors()}</td>
                                         <td>${book.getPress()}</td>
+                                        <td>${book.getStatus()}</td>
+                                        <td><a href="add?id=${book.getId()}" style="color: rgb(110,110,110);text-decoration: none">加入购物车</a></td>
                                     </tr>
                                 </c:forEach>
                             </table>

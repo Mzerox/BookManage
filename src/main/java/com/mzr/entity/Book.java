@@ -11,4 +11,7 @@ public class Book {
     private String Name;
     private String Authors;
     private String Press;
+    private String Description;
+    private String Price;
+    private String Status;
 }
