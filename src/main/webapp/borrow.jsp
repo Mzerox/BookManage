@@ -2,8 +2,8 @@
 <%--
   Created by IntelliJ IDEA.
   User: 米泽榕
-  Date: 2022/5/8
-  Time: 15:18
+  Date: 2022/5/16
+  Time: 19:56
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -63,6 +63,9 @@
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <script src="assets/js/cart.js"></script>
+    <script src="assets/js/core.min.js" >
+        <script src="scripts/jquery.mmenu.min.js"></script>
     <![endif]-->
 </head>
 
@@ -85,13 +88,13 @@
                             <i class="fa fa-tasks" aria-hidden="true"></i><span>首页</span>
                         </a>
                     </li>
-               <c:forEach items="${bookList}" var="book">
-                   <li >
-                       <a href="category?id=${book.getId()}">
-                           <i class="fa fa-tasks" aria-hidden="true"></i><span>${book.getName()}</span>
-                       </a>
-                   </li>
-               </c:forEach>
+                    <c:forEach items="${bookList}" var="book">
+                        <li >
+                            <a href="category?id=${book.getId()}">
+                                <i class="fa fa-tasks" aria-hidden="true"></i><span>${book.getName()}</span>
+                            </a>
+                        </li>
+                    </c:forEach>
                     <li>
                         <a href="bookcase.jsp">
                             <i class="fa fa-tasks" aria-hidden="true"></i><span>我的书架</span>
@@ -133,7 +136,6 @@
             <div class="navbar" role="navigation">
                 <div class="container-fluid container-nav">
                     <div style="font-family:'微软雅黑 Light';font-size: x-large;font-weight: bold;color: rgb(59,191,180);">程序猿天堂自助图书馆</div>
-
                     <!-- 用户盒子-->
                     <c:if test="${login=='true'}">
                         <div class="navbar-right" style="transform: translateY(-60px)">
@@ -182,7 +184,6 @@
                             <a href="login.jsp" style="text-decoration: none;color: black">登录</a>
                         </div>
                     </c:if>
-
                 </div>
             </div>
             <!-- 主页正题盒子-->
@@ -192,158 +193,175 @@
                         <div class="page-header">
                             <form class="search navbar-form" action="SearchServlet" method="get">
                                 <div class="input-group input-search">
-                                        <input type="text" class="form-control bk-radius" name="q" id="q" placeholder="Search...">
-                                        <span class="input-group-btn">
+                                    <input type="text" class="form-control bk-radius" name="q" id="q" placeholder="Search...">
+                                    <span class="input-group-btn">
                                             <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
                                         </span>
                                 </div>
                             </form>
                         </div>
+                        <!-- 借阅清单-->
                         <div>
-                            <table class="table table-hover">
+                            <table class="table table-styled mb-0">
+                                <thead>
                                 <tr>
-                                    <th>分类编码</th>
-                                    <th>书名</th>
-                                    <th>作者</th>
-                                    <th>出版社</th>
-                                    <th>图书状态</th>
-                                    <th>购物车</th>
+                                    <th><input type="checkbox" name="checkall" value="all" id="del" >全选</th>
+                                    <th>书籍编码</th>
+                                    <th>书籍名称</th>
+                                    <th>书籍作者</th>
+                                    <th>书籍出版社</th>
+                                    <th>是否续借</th>
+                                    <th>是否归还</th>
+                                    <th></th>
                                 </tr>
-                                <c:forEach items="${bookArrayList}" var="book">
+                                </thead>
+                                <c:forEach items="${shop.getBookList()}" var="book">
+                                    <tbody>
                                     <tr>
-                                        <td>${book.getCode()}</td>
-                                        <td>${book.getName()}</td>
-                                        <td>${book.getAuthors()}</td>
+                                        <td> <input class="qin" type="checkbox" name="check" ></td>
+                                        <td >${book.getCode()}</td>
+                                        <td >${book.getName()}</td>
+                                        <td >${book.getAuthors()}</td>
                                         <td>${book.getPress()}</td>
                                         <td>${book.getStatus()}</td>
-                                        <td><a href="add?id=${book.getId()}" style="color: rgb(110,110,110);text-decoration: none">加入购物车</a></td>
+                                        <td>
+                                            <c:if test="${book.getStatus()== '有货'}">
+                                                <a style="color: #00acee" href="shop?id=${book.getId()}">借阅</a>
+                                            </c:if>
+                                            <c:if test="${book.getStatus()== '无货'}">
+                                                <p style="color: red">已借阅</p>
+                                            </c:if>
+                                        </td>
+                                        <td><a style="color: red;text-decoration: none" href="remover?id=${book.getId()}">X</a></td>
                                     </tr>
+                                    </tbody>
                                 </c:forEach>
                             </table>
+
+
+
                         </div>
                     </div>
                 </div>
+                <!--        <div class="jqvmap-label" style="display: none;">-->
+                <!--        </div>-->
             </div>
         </div>
-        <!--        <div class="jqvmap-label" style="display: none;">-->
-        <!--        </div>-->
-    </div>
-</div>
 
 
-<!-- start: JavaScript-->
+        <!-- start: JavaScript-->
 
-<!-- Vendor JS-->
-<script src="assets/vendor/js/jquery.min.js"></script>
-<script src="assets/vendor/js/jquery-2.1.1.min.js"></script>
-<script src="assets/vendor/js/jquery-migrate-1.2.1.min.js"></script>
-<script src="assets/vendor/bootstrap/js/bootstrap.min.js"></script>
-<script src="assets/vendor/skycons/js/skycons.js"></script>
-<script src="assets/vendor/js/pace.min.js"></script>
+        <!-- Vendor JS-->
+        <script src="assets/vendor/js/jquery.min.js"></script>
+        <script src="assets/vendor/js/jquery-2.1.1.min.js"></script>
+        <script src="assets/vendor/js/jquery-migrate-1.2.1.min.js"></script>
+        <script src="assets/vendor/bootstrap/js/bootstrap.min.js"></script>
+        <script src="assets/vendor/skycons/js/skycons.js"></script>
+        <script src="assets/vendor/js/pace.min.js"></script>
 
-<!-- Plugins JS-->
-<script src="assets/plugins/jquery-ui/js/jquery-ui-1.10.4.min.js"></script>
-<script src="assets/plugins/scrollbar/js/jquery.mCustomScrollbar.concat.min.js"></script>
-<script src="assets/plugins/bootkit/js/bootkit.js"></script>
-<script src="assets/plugins/magnific-popup/js/magnific-popup.js"></script>
-<script src="assets/plugins/moment/js/moment.min.js"></script>
-<script src="assets/plugins/fullcalendar/js/fullcalendar.js"></script>
-<script src="assets/plugins/flot/js/jquery.flot.min.js"></script>
-<script src="assets/plugins/flot/js/jquery.flot.pie.min.js"></script>
-<script src="assets/plugins/flot/js/jquery.flot.resize.min.js"></script>
-<script src="assets/plugins/flot/js/jquery.flot.stack.min.js"></script>
-<script src="assets/plugins/flot/js/jquery.flot.time.min.js"></script>
-<script src="assets/plugins/flot-tooltip/js/jquery.flot.tooltip.js"></script>
-<script src="assets/plugins/chart-master/js/Chart.js"></script>
-<script src="assets/plugins/jqvmap/jquery.vmap.js"></script>
-<script src="assets/plugins/jqvmap/data/jquery.vmap.sampledata.js"></script>
-<script src="assets/plugins/jqvmap/maps/jquery.vmap.world.js"></script>
-<script src="assets/plugins/sparkline/js/jquery.sparkline.min.js"></script>
+        <!-- Plugins JS-->
+        <script src="assets/plugins/jquery-ui/js/jquery-ui-1.10.4.min.js"></script>
+        <script src="assets/plugins/scrollbar/js/jquery.mCustomScrollbar.concat.min.js"></script>
+        <script src="assets/plugins/bootkit/js/bootkit.js"></script>
+        <script src="assets/plugins/magnific-popup/js/magnific-popup.js"></script>
+        <script src="assets/plugins/moment/js/moment.min.js"></script>
+        <script src="assets/plugins/fullcalendar/js/fullcalendar.js"></script>
+        <script src="assets/plugins/flot/js/jquery.flot.min.js"></script>
+        <script src="assets/plugins/flot/js/jquery.flot.pie.min.js"></script>
+        <script src="assets/plugins/flot/js/jquery.flot.resize.min.js"></script>
+        <script src="assets/plugins/flot/js/jquery.flot.stack.min.js"></script>
+        <script src="assets/plugins/flot/js/jquery.flot.time.min.js"></script>
+        <script src="assets/plugins/flot-tooltip/js/jquery.flot.tooltip.js"></script>
+        <script src="assets/plugins/chart-master/js/Chart.js"></script>
+        <script src="assets/plugins/jqvmap/jquery.vmap.js"></script>
+        <script src="assets/plugins/jqvmap/data/jquery.vmap.sampledata.js"></script>
+        <script src="assets/plugins/jqvmap/maps/jquery.vmap.world.js"></script>
+        <script src="assets/plugins/sparkline/js/jquery.sparkline.min.js"></script>
 
-<!-- Theme JS -->
-<script src="assets/js/jquery.mmenu.min.js"></script>
-<script src="assets/js/core.min.js"></script>
+        <!-- Theme JS -->
+        <script src="assets/js/jquery.mmenu.min.js"></script>
+        <script src="assets/js/core.min.js"></script>
 
-<!-- Pages JS -->
-<script src="assets/js/pages/index.js"></script>
+        <!-- Pages JS -->
+        <script src="assets/js/pages/index.js"></script>
 
-<!-- end: JavaScript-->
+        <!-- end: JavaScript-->
 
 
 
-<!-- Code injected by live-server -->
-<script type="text/javascript">
-    // <![CDATA[  <-- For SVG support
-    if ('WebSocket' in window) {
-        (function () {
-            function refreshCSS() {
-                var sheets = [].slice.call(document.getElementsByTagName("link"));
-                var head = document.getElementsByTagName("head")[0];
-                for (var i = 0; i < sheets.length; ++i) {
-                    var elem = sheets[i];
-                    var parent = elem.parentElement || head;
-                    parent.removeChild(elem);
-                    var rel = elem.rel;
-                    if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-                        var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-                        elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-                    }
-                    parent.appendChild(elem);
-                }
-            }
-            var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-            var address = protocol + window.location.host + window.location.pathname + '/ws';
-            var socket = new WebSocket(address);
-            socket.onmessage = function (msg) {
-                if (msg.data == 'reload') window.location.reload();
-                else if (msg.data == 'refreshcss') refreshCSS();
-            };
-            if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-                console.log('Live reload enabled.');
-                sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-            }
-        })();
-    }
-    else {
-        console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-    }
-    // ]]>
-</script>
-
-
-<script>
-    (function() {
-        var ws = new WebSocket('ws://' + window.location.host + '/jb-server-page?reloadServiceClientId=10');
-        ws.onmessage = function (msg) {
-            if (msg.data === 'reload') {
-                window.location.reload();
-            }
-            if (msg.data.startsWith('update-css ')) {
-                var messageId = msg.data.substring(11);
-                var links = document.getElementsByTagName('link');
-                for (var i = 0; i < links.length; i++) {
-                    var link = links[i];
-                    if (link.rel !== 'stylesheet') continue;
-                    var clonedLink = link.cloneNode(true);
-                    var newHref = link.href.replace(/(&|\?)jbUpdateLinksId=\d+/, "$1jbUpdateLinksId=" + messageId);
-                    if (newHref !== link.href) {
-                        clonedLink.href = newHref;
-                    }
-                    else {
-                        var indexOfQuest = newHref.indexOf('?');
-                        if (indexOfQuest >= 0) {
-                            // to support ?foo#hash
-                            clonedLink.href = newHref.substring(0, indexOfQuest + 1) + 'jbUpdateLinksId=' + messageId + '&' +
-                                newHref.substring(indexOfQuest + 1);
-                        }
-                        else {
-                            clonedLink.href += '?' + 'jbUpdateLinksId=' + messageId;
+        <!-- Code injected by live-server -->
+        <script type="text/javascript">
+            // <![CDATA[  <-- For SVG support
+            if ('WebSocket' in window) {
+                (function () {
+                    function refreshCSS() {
+                        var sheets = [].slice.call(document.getElementsByTagName("link"));
+                        var head = document.getElementsByTagName("head")[0];
+                        for (var i = 0; i < sheets.length; ++i) {
+                            var elem = sheets[i];
+                            var parent = elem.parentElement || head;
+                            parent.removeChild(elem);
+                            var rel = elem.rel;
+                            if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+                                var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+                                elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+                            }
+                            parent.appendChild(elem);
                         }
                     }
-                    link.replaceWith(clonedLink);
-                }
+                    var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+                    var address = protocol + window.location.host + window.location.pathname + '/ws';
+                    var socket = new WebSocket(address);
+                    socket.onmessage = function (msg) {
+                        if (msg.data == 'reload') window.location.reload();
+                        else if (msg.data == 'refreshcss') refreshCSS();
+                    };
+                    if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+                        console.log('Live reload enabled.');
+                        sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+                    }
+                })();
             }
-        };
-    })();
-</script><div id="mm-blocker"></div></body>
+            else {
+                console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+            }
+            // ]]>
+        </script>
+
+
+        <script>
+            (function() {
+                var ws = new WebSocket('ws://' + window.location.host + '/jb-server-page?reloadServiceClientId=10');
+                ws.onmessage = function (msg) {
+                    if (msg.data === 'reload') {
+                        window.location.reload();
+                    }
+                    if (msg.data.startsWith('update-css ')) {
+                        var messageId = msg.data.substring(11);
+                        var links = document.getElementsByTagName('link');
+                        for (var i = 0; i < links.length; i++) {
+                            var link = links[i];
+                            if (link.rel !== 'stylesheet') continue;
+                            var clonedLink = link.cloneNode(true);
+                            var newHref = link.href.replace(/(&|\?)jbUpdateLinksId=\d+/, "$1jbUpdateLinksId=" + messageId);
+                            if (newHref !== link.href) {
+                                clonedLink.href = newHref;
+                            }
+                            else {
+                                var indexOfQuest = newHref.indexOf('?');
+                                if (indexOfQuest >= 0) {
+                                    // to support ?foo#hash
+                                    clonedLink.href = newHref.substring(0, indexOfQuest + 1) + 'jbUpdateLinksId=' + messageId + '&' +
+                                        newHref.substring(indexOfQuest + 1);
+                                }
+                                else {
+                                    clonedLink.href += '?' + 'jbUpdateLinksId=' + messageId;
+                                }
+                            }
+                            link.replaceWith(clonedLink);
+                        }
+                    }
+                };
+            })();
+        </script><div id="mm-blocker"></div></div></div></body>
 </html>

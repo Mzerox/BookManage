@@ -92,6 +92,16 @@
                        </a>
                    </li>
                </c:forEach>
+                    <li>
+                        <a href="bookcase.jsp">
+                            <i class="fa fa-tasks" aria-hidden="true"></i><span>我的书架</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="reader">
+                            <i class="fa fa-tasks" aria-hidden="true"></i><span>我的借阅</span>
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </div>

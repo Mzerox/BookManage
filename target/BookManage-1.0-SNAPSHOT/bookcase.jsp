@@ -63,6 +63,11 @@
   <!--[if lt IE 9]>
   <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<script src="assets/js/cart.js"></script>
+<script src="assets/js/core.min.js" >
+<script src="assets/js/remove.js" >
+  <script src="scripts/jquery.mmenu.min.js"></script>
+
   <![endif]-->
 </head>
 
@@ -92,6 +97,16 @@
               </a>
             </li>
           </c:forEach>
+          <li>
+            <a href="bookcase.jsp">
+              <i class="fa fa-tasks" aria-hidden="true"></i><span>我的书架</span>
+            </a>
+          </li>
+          <li>
+            <a href="reader">
+              <i class="fa fa-tasks" aria-hidden="true"></i><span>我的借阅</span>
+            </a>
+          </li>
         </ul>
       </nav>
     </div>
@@ -192,18 +207,24 @@
               <table class="table table-styled mb-0">
                 <thead>
                 <tr>
+                  <th><input type="checkbox" name="checkall" value="all" id="del"  >全选</th>
+<%--                  <input type="checkbox" name="checkall" value="all" id="del"  >--%>
                   <th>书籍编码</th>
                   <th>书籍名称</th>
                   <th>书籍作者</th>
                   <th>书籍出版社</th>
                   <th>图书状态</th>
-                  <th>是否借阅</th>
+                  <th><button class="xujie"  id="btn" style="color: white;background-color: #0cbeaf;width: 80px;height: 50px;text-align: center" >
+                    借阅
+                  </button></th>
                   <th></th>
                 </tr>
                 </thead>
                 <c:forEach items="${shop.getBookList()}" var="book">
                   <tbody>
-                  <tr>
+                  <tr id="${book.getId()}">
+<%--                    <td> <input class="qin" type="checkbox" name="check" ></td>--%>
+                   <td><input class="qin" type="checkbox" name="check" value="${book.getId()}" ></td>
                     <td >${book.getCode()}</td>
                     <td >${book.getName()}</td>
                     <td >${book.getAuthors()}</td>
@@ -221,11 +242,7 @@
                   </tr>
                   </tbody>
                 </c:forEach>
-
               </table>
-
-
-
         </div>
       </div>
     </div>
@@ -272,82 +289,139 @@
 <script src="assets/js/pages/index.js"></script>
 
 <!-- end: JavaScript-->
+<script>
+  $(function () {
+    $('#del').click(function () {
+      if(this.checked){
+        $("input[name='check']").attr("checked",true);
+      }
+      else {
+        $("input[name='check']").attr("checked",false);
+      }
+    })
 
+  })
+  $(function () {
+    $('#btn').click(function () {
 
+      // let check=$('.qin').val();
+      let check=document.getElementsByName('check')
+      let id=[];
+      if ($("input[name='check']:checked").length==0){
+        confirm("请至少选择一个目标")
+      }else {
+        for(i=0;i<check.length;i++){
 
-<!-- Code injected by live-server -->
-<script type="text/javascript">
-  // <![CDATA[  <-- For SVG support
-  if ('WebSocket' in window) {
-    (function () {
-      function refreshCSS() {
-        var sheets = [].slice.call(document.getElementsByTagName("link"));
-        var head = document.getElementsByTagName("head")[0];
-        for (var i = 0; i < sheets.length; ++i) {
-          var elem = sheets[i];
-          var parent = elem.parentElement || head;
-          parent.removeChild(elem);
-          var rel = elem.rel;
-          if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-            var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-            elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+          if(check[i].checked){
+            id.push(check[i].value);
+
           }
-          parent.appendChild(elem);
         }
+
+        $.ajax({
+          url:'shopreal',
+          type:'get',
+          data:{
+            id:JSON.stringify(id)
+
+          },
+          success:(req)=>{
+            window.alert("借阅成功")
+
+            for (let i = 0; i < id.length; i++) {
+              $("input[name='check']").parents('tr#'+id[i]).remove()
+            }
+
+            // $("input[name='check']:checked").parents('td').remove()
+
+            // $("input[name='check']").attr("checked",true).parents('td').remove()
+
+
+
+          }
+        })
       }
-      var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-      var address = protocol + window.location.host + window.location.pathname + '/ws';
-      var socket = new WebSocket(address);
-      socket.onmessage = function (msg) {
-        if (msg.data == 'reload') window.location.reload();
-        else if (msg.data == 'refreshcss') refreshCSS();
-      };
-      if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-        console.log('Live reload enabled.');
-        sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-      }
-    })();
-  }
-  else {
-    console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-  }
-  // ]]>
+
+    })
+
+
+  })
 </script>
 
 
-<script>
-  (function() {
-    var ws = new WebSocket('ws://' + window.location.host + '/jb-server-page?reloadServiceClientId=10');
-    ws.onmessage = function (msg) {
-      if (msg.data === 'reload') {
-        window.location.reload();
-      }
-      if (msg.data.startsWith('update-css ')) {
-        var messageId = msg.data.substring(11);
-        var links = document.getElementsByTagName('link');
-        for (var i = 0; i < links.length; i++) {
-          var link = links[i];
-          if (link.rel !== 'stylesheet') continue;
-          var clonedLink = link.cloneNode(true);
-          var newHref = link.href.replace(/(&|\?)jbUpdateLinksId=\d+/, "$1jbUpdateLinksId=" + messageId);
-          if (newHref !== link.href) {
-            clonedLink.href = newHref;
-          }
-          else {
-            var indexOfQuest = newHref.indexOf('?');
-            if (indexOfQuest >= 0) {
-              // to support ?foo#hash
-              clonedLink.href = newHref.substring(0, indexOfQuest + 1) + 'jbUpdateLinksId=' + messageId + '&' +
-                      newHref.substring(indexOfQuest + 1);
-            }
-            else {
-              clonedLink.href += '?' + 'jbUpdateLinksId=' + messageId;
-            }
-          }
-          link.replaceWith(clonedLink);
-        }
-      }
-    };
-  })();
-</script><div id="mm-blocker"></div></body>
+<!-- Code injected by live-server -->
+<%--<script type="text/javascript">--%>
+<%--  // <![CDATA[  <-- For SVG support--%>
+<%--  if ('WebSocket' in window) {--%>
+<%--    (function () {--%>
+<%--      function refreshCSS() {--%>
+<%--        var sheets = [].slice.call(document.getElementsByTagName("link"));--%>
+<%--        var head = document.getElementsByTagName("head")[0];--%>
+<%--        for (var i = 0; i < sheets.length; ++i) {--%>
+<%--          var elem = sheets[i];--%>
+<%--          var parent = elem.parentElement || head;--%>
+<%--          parent.removeChild(elem);--%>
+<%--          var rel = elem.rel;--%>
+<%--          if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {--%>
+<%--            var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');--%>
+<%--            elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());--%>
+<%--          }--%>
+<%--          parent.appendChild(elem);--%>
+<%--        }--%>
+<%--      }--%>
+<%--      var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';--%>
+<%--      var address = protocol + window.location.host + window.location.pathname + '/ws';--%>
+<%--      var socket = new WebSocket(address);--%>
+<%--      socket.onmessage = function (msg) {--%>
+<%--        if (msg.data == 'reload') window.location.reload();--%>
+<%--        else if (msg.data == 'refreshcss') refreshCSS();--%>
+<%--      };--%>
+<%--      if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {--%>
+<%--        console.log('Live reload enabled.');--%>
+<%--        sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);--%>
+<%--      }--%>
+<%--    })();--%>
+<%--  }--%>
+<%--  else {--%>
+<%--    console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');--%>
+<%--  }--%>
+<%--  // ]]>--%>
+<%--</script>--%>
+
+
+<%--<script>--%>
+<%--  (function() {--%>
+<%--    var ws = new WebSocket('ws://' + window.location.host + '/jb-server-page?reloadServiceClientId=10');--%>
+<%--    ws.onmessage = function (msg) {--%>
+<%--      if (msg.data === 'reload') {--%>
+<%--        window.location.reload();--%>
+<%--      }--%>
+<%--      if (msg.data.startsWith('update-css ')) {--%>
+<%--        var messageId = msg.data.substring(11);--%>
+<%--        var links = document.getElementsByTagName('link');--%>
+<%--        for (var i = 0; i < links.length; i++) {--%>
+<%--          var link = links[i];--%>
+<%--          if (link.rel !== 'stylesheet') continue;--%>
+<%--          var clonedLink = link.cloneNode(true);--%>
+<%--          var newHref = link.href.replace(/(&|\?)jbUpdateLinksId=\d+/, "$1jbUpdateLinksId=" + messageId);--%>
+<%--          if (newHref !== link.href) {--%>
+<%--            clonedLink.href = newHref;--%>
+<%--          }--%>
+<%--          else {--%>
+<%--            var indexOfQuest = newHref.indexOf('?');--%>
+<%--            if (indexOfQuest >= 0) {--%>
+<%--              // to support ?foo#hash--%>
+<%--              clonedLink.href = newHref.substring(0, indexOfQuest + 1) + 'jbUpdateLinksId=' + messageId + '&' +--%>
+<%--                      newHref.substring(indexOfQuest + 1);--%>
+<%--            }--%>
+<%--            else {--%>
+<%--              clonedLink.href += '?' + 'jbUpdateLinksId=' + messageId;--%>
+<%--            }--%>
+<%--          }--%>
+<%--          link.replaceWith(clonedLink);--%>
+<%--        }--%>
+<%--      }--%>
+<%--    };--%>
+<%--  })();--%>
+<%--</script><div id="mm-blocker"></div></div></div></body>--%>
 </html>
